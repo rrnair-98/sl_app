@@ -6,11 +6,12 @@ include('Crud.php');
 
 $servername = "localhost";
 $username = "root";
-$db="mydb";
-$table="myguests";
+$db="college";
+$table="users";
+$password='';
 
 
-$crud= new Crud($servername,$username,$db);
+$crud= new Crud($servername,$username,$password,$db);
 
 
   //Object of crud class creation.
@@ -25,7 +26,11 @@ if(isset($_POST['submit']))
     
     $email=$_POST['email'];
     
-    $crud->insertData($name,$pass,$email,$table);
+    $columns=array('username','email','password');
+    
+    $values=array($name,$email,$pass);
+    
+    $crud->insertData($table,$columns,$values);
    
         
 }
