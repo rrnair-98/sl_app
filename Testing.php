@@ -6,12 +6,13 @@ include('Crud.php');
 
 $servername = "localhost";
 $username = "root";
-$db="college";
-$table="users";
-$password='';
+$db="mydb";
+$table="myguests";
+$columns=array("name","password","email");
+//$values=array("jack","123","gh@f.f");
+$del_array=array(30,31,32);
 
-
-$crud= new Crud($servername,$username,$password,$db);
+$crud= new Crud($servername,$username,$db);
 
 
   //Object of crud class creation.
@@ -26,21 +27,21 @@ if(isset($_POST['submit']))
     
     $email=$_POST['email'];
     
-    $columns=array('username','email','password');
-    
-    $values=array($name,$email,$pass);
-    
-    $crud->insertData($table,$columns,$values);
+    $values[]=$name;
+    $values[]=$pass;
+    $values[]=$email;
+    $crud->insertdata($table,$columns,$values);
    
         
 }
 if(isset($_POST['delete-button']))
 {
-     $crud->deleteData(4,$table);
+     $crud->deleteData($table,$del_array);
 }
 if(isset($_POST['update-button']))
 {
-    $crud->updateData(2,'name','prachi',$table);
+    $values=array("jack","123","jack@gmail.com");
+    $crud->updateData(26,$columns,$values,$table);
 }
 
 if(isset($_POST['return-records']))
