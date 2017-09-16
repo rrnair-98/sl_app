@@ -1,4 +1,4 @@
-<DOCTYPE! HTML>
+>
 <?php
 class Crud
 {
