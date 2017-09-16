@@ -10,10 +10,10 @@ class Crud
       $this->conn = new mysqli($servername, $username,"",$db);
       if ($this->conn->connect_error) 
     die("Connection failed: " . $conn->connect_error);
-    $this->arra=array(1,2,3,4);
+    
     }
     
-    function deleteData($table,$del_array)
+    function deleteData($table,$del_array)  //function which accepts table name and an aaray of ids to delete
     {
         
         $bindTypes= $this->getBindType($del_array);
@@ -29,7 +29,7 @@ class Crud
         if($stmt->execute())
         {
             $ar=$stmt->affected_rows;
-        echo "$ar Rows deleted";
+        return $ar;
         }
         
         
@@ -38,13 +38,13 @@ class Crud
 function insert($table,$columns,$values)
 {
     
-    $bindTypes = getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
+    $bindTypes = $this->getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
     
-    insertData($table,$columns,$values,$bindTypes);//call the master insert 
+    $this->insertData($table,$columns,$values,$bindTypes);//call the master insert 
 }
 
 
-function insertData($table,$columns,$values,$bindTypes)
+function insertData($table,$columns,$values,$bindTypes)//inserts the values by getting the bindtypes and placeholder values
 {
     $questionMarkString = $this->getPlaceholder(count($values));//returns string with number of question marks
     $columnList = implode(',',$columns); //Get columns in a comma separated manner
@@ -53,11 +53,12 @@ function insertData($table,$columns,$values,$bindTypes)
     call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes), $this->getParams($values)));//uses to pass bind params to mysqli bind_param,$this->getParams($values) returns array with reference paramters required by bind_param
     
     $stmt->execute();//Execute the statement, if it executes correctly 
-    return $stmt->affected_rows;
+    $ar=$stmt->affected_rows;
+    return $ar;
     
 }
 
-function getBindType($values)
+function getBindType($values)  //function to decide the datatype flow of binding
 {
     $dt="";
     $ar=array();
@@ -67,7 +68,7 @@ function getBindType($values)
         $dt=gettype($values[$i]);
          switch($dt)
         {
-            case "integer":
+            case "integer":  //fuck off
             {
                 
                 $ar[]="i";
@@ -99,7 +100,7 @@ function getBindType($values)
         
 }
 
-function getPlaceHolder($count)
+function getPlaceHolder($count)  //returns the number of ?'s to plavce in the query based on the count
 {
     $qt=array();
     for($i=0;$i<$count;$i++)
@@ -110,7 +111,7 @@ function getPlaceHolder($count)
     return implode(",",$qt);// glue question marks using , as delimiter
 }
 
-function getParams($values)
+function getParams($values)   //returns a reference of array
 {
     $params= array();
     for($i = 0; $i< count($values); $i++)// loop to make the passed array as reference array
@@ -120,7 +121,7 @@ function getParams($values)
     }
     return $params;//return referenced array
 }
-function getData($id,$table)
+function getData($id,$table) //returns a json file based on the contents present in the database
 {
         $query="select * from $table";
         $result=mysqli_query($this->conn,$query);
@@ -135,7 +136,7 @@ function getData($id,$table)
             return $jsonString;*/
 }
     
-function getJson($table,$array)
+function getJson($table,$array) //parses the resultset object into a json file and returns it.
 {
      $jsonString = '{"'.$table.'":'.json_encode($myArray)."}";//append table name to the json encode output
      return $jsonString;//return the final jon string
@@ -143,7 +144,7 @@ function getJson($table,$array)
 }
 
     
-    function updateData($id,$columns,$values,$table)
+    function updateData($id,$columns,$values,$table)  //returns effected no of rows after updation
     {
   
         $columnList="";
@@ -163,10 +164,10 @@ function getJson($table,$array)
    
         //$params=array_merge(array($bindTypes),$this->getParams($values));
   call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes),$this->getParams($values)));//uses to pass bind params to mysqli bind_param
-    if($stmt->execute())
+    if($stmt->execute())//Execute the statement, if it executes correctly 
         {
             $ar=$stmt->affected_rows;
-        echo "$ar Rows updated";
+        return $ar;
         }
        
         
@@ -181,4 +182,3 @@ function getJson($table,$array)
 }
 
 ?>
-

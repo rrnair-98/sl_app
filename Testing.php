@@ -10,7 +10,7 @@ $db="mydb";
 $table="myguests";
 $columns=array("name","password","email");
 //$values=array("jack","123","gh@f.f");
-$del_array=array(30,31,32);
+$del_array=array(34,35,36);
 
 $crud= new Crud($servername,$username,$db);
 
@@ -30,7 +30,7 @@ if(isset($_POST['submit']))
     $values[]=$name;
     $values[]=$pass;
     $values[]=$email;
-    $crud->insertdata($table,$columns,$values);
+    $crud->insert($table,$columns,$values);
    
         
 }
@@ -41,7 +41,7 @@ if(isset($_POST['delete-button']))
 if(isset($_POST['update-button']))
 {
     $values=array("jack","123","jack@gmail.com");
-    $crud->updateData(26,$columns,$values,$table);
+    $crud->updateData(2,$columns,$values,$table);
 }
 
 if(isset($_POST['return-records']))
