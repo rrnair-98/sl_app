@@ -40,32 +40,20 @@ function insert($table,$columns,$values)
     
     $bindTypes = getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
     
-    insert($table,$columns,$values,$bindTypes);
+    insertData($table,$columns,$values,$bindTypes);//call the master insert 
 }
 
 
-function insertData($table,$columns,$values)
+function insertData($table,$columns,$values,$bindTypes)
 {
-    
-    $bindTypes = $this->getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
-    
     $questionMarkString = $this->getPlaceholder(count($values));//returns string with number of question marks
+    $columnList = implode(',',$columns); //Get columns in a comma separated manner
+    $stmt = $this->conn->prepare("INSERT INTO $table($columnList) VALUES($questionMarkString);");//Prepare the statement using the column list and question mark string
+        
+    call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes), $this->getParams($values)));//uses to pass bind params to mysqli bind_param,$this->getParams($values) returns array with reference paramters required by bind_param
     
-   // $params = $this->getParams($values); //returns array with reference paramters required by bind_param
-    
-    $columnList = implode(',',$columns);
-    
-    $stmt = $this->conn->prepare("INSERT INTO $table($columnList) VALUES($questionMarkString);"); //end query semicolon optional
-    
-    
-    call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes), $this->getParams($values)));//uses to pass bind params to mysqli bind_param
-    if($stmt->execute())
-    {
-            $ar=$stmt->affected_rows;
-        echo "$ar Rows inserted";
-    }
-    
-    
+    $stmt->execute();//Execute the statement, if it executes correctly 
+    return $stmt->affected_rows;
     
 }
 
@@ -125,47 +113,35 @@ function getPlaceHolder($count)
 function getParams($values)
 {
     $params= array();
-    for($i = 0; $i< count($values); $i++)
+    for($i = 0; $i< count($values); $i++)// loop to make the passed array as reference array
     {
         $params[$i] = &$values[$i];
         
     }
-    return $params;
+    return $params;//return referenced array
 }
-
-
-    
-    function getData($id,$table)
-    {
-       
-        
-        
+function getData($id,$table)
+{
         $query="select * from $table";
         $result=mysqli_query($this->conn,$query);
-        
-        //$myArray='{"'.$table.'":';
         $myArray=array();
-        while($row=$result->fetch_array(MYSQL_ASSOC))
+        while($row=$result->fetch_array(MYSQL_ASSOC))//Loop to copy the contents of row to an array
         {
             $myArray[]=$row;
         }
+        return $myArray; // returning the resultset
         
-        /*if(mysqli_num_rows($result)==1)
-            {
-                $row=mysqli_fetch_assoc($result);
-                
-            }*/
-            
-          //  $namee=$row['name'];
-            //$row="marks".":array(1,2,3)";
-            
-            $jsonString = '{"'.$table.'":'.json_encode($myArray)."}";
-            echo $jsonString;
-    }
+        /*    $jsonString = '{"'.$table.'":'.json_encode($myArray)."}";
+            return $jsonString;*/
+}
     
+function getJson($table,$array)
+{
+     $jsonString = '{"'.$table.'":'.json_encode($myArray)."}";//append table name to the json encode output
+     return $jsonString;//return the final jon string
+    
+}
 
-    
-  
     
     function updateData($id,$columns,$values,$table)
     {
