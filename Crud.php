@@ -1,4 +1,3 @@
->
 <?php
 class Crud
 {
@@ -40,8 +39,9 @@ function insert($table,$columns,$values)
     
     $bindTypes = $this->getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
     
-    $this->insertData($table,$columns,$values,$bindTypes);//call the master insert 
+    return $this->insertData($table,$columns,$values,$bindTypes);//call the master insert 
 }
+    
 function insertData($table,$columns,$values,$bindTypes)//inserts the values by getting the bindtypes and placeholder values
 {
     $questionMarkString = $this->getPlaceholder(count($values));//returns string with number of question marks
