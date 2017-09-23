@@ -1,59 +1,120 @@
+<DOCTYPE! HTML>
 <?php
+include_once('CustomExceptions.php');
+    error_reporting(E_ERROR | E_PARSE);
+
 class Crud
 {
     
     //public $v; variable definition should be with the access specifier.
     //Any variable defined within the constuctor should be donr with the help of this pointer.
-    function __construct($servername,$username,$db)
+    function __construct($servername,$username,$password,$db)
     {
-      $this->conn = new mysqli($servername, $username,"",$db);
-      if ($this->conn->connect_error) 
-    die("Connection failed: " . $conn->connect_error);
-    
+      $this->conn = new mysqli($servername, $username,$password,$db);
+      try
+      {if ($this->conn->connect_error) 
+            throw new ConnectionError($this->conn->connect_error);
+      }
+      catch(ConnectionError $ce)
+      {
+          $ce->errorMessage();
+      }
     }
     
-    function deleteData($table,$del_array)  //function which accepts table name and an aaray of ids to delete
+    function deleteData($table,$del_array,$whereParam)  //function which accepts table name and an aaray of ids to delete
     {
-        
-        $bindTypes= $this->getBindType($del_array);
-        $questionString=$this->getPlaceholder(count($del_array));
-       
-       // $query="delete from $table where id IN($this->arr)";
-        
-        
-        $stmt=$this->conn->prepare("delete from $table where id IN($questionString);");
-        
-        
-        call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes),$this->getParams($del_array)));
-        if($stmt->execute())
+        try
         {
-            $ar=$stmt->affected_rows;
-        return $ar;
+            if(!$this->checkIfTableExists($table))
+            {
+                throw new TableNotExists($table);
+            }
+            
+
+            $bindTypes=$this->getBindType($del_array);
+            $questionString=$this->getPlaceholder(count($del_array));
+
+           // $query="delete from $table where id IN($this->arr)";
+
+
+            $stmt=$this->conn->prepare("delete from $table where $whereParam IN($questionString);");
+
+
+            call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes),$this->getParams($del_array)));
+            if($stmt->execute())
+            {
+                $ar=$stmt->affected_rows;
+                return $ar;
+            }
         }
+        catch(TableNotExists $tne)
+    {
+            throw $tne;
+    }
+    
         
         
    
     }
 function insert($table,$columns,$values)
 {
+     try
+     {
+            if(!$this->checkIfTableExists($table))
+            {
+                throw new TableNotExists($table);
+            }
+            if(count($columns)!=count($values))
+            {
+                throw new UnmatchedColumnValueList(count($columns),count($values));
+            }
+        
+            $bindTypes = $this->getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
     
-    $bindTypes = $this->getBindType($values);//get the bind type for each value. eg it will return ss or sss or si etc
+            $this->insertData($table,$columns,$values,$bindTypes);//call the master insert  
+         
+    }
+    catch(TableNotExists $tne)
+    {
+            throw $tne;
+    }
+    catch(UnmatchedColumnValueList $ucv)
+    {
+        throw $ucv;
+    }
     
-    return $this->insertData($table,$columns,$values,$bindTypes);//call the master insert 
 }
-    
 function insertData($table,$columns,$values,$bindTypes)//inserts the values by getting the bindtypes and placeholder values
 {
-    $questionMarkString = $this->getPlaceholder(count($values));//returns string with number of question marks
-    $columnList = implode(',',$columns); //Get columns in a comma separated manner
-    $stmt = $this->conn->prepare("INSERT INTO $table($columnList) VALUES($questionMarkString);");//Prepare the statement using the column list and question mark string
-        
-    call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes), $this->getParams($values)));//uses to pass bind params to mysqli bind_param,$this->getParams($values) returns array with reference paramters required by bind_param
-    
-    $stmt->execute();//Execute the statement, if it executes correctly 
-    $ar=$stmt->affected_rows;
-    return $ar;
-    
+    try
+     {
+            if(!$this->checkIfTableExists($table))
+            {
+                throw new TableNotExists($table);
+            }
+            if(count($columns)!=count($values))
+            {
+                throw new UnmatchedColumnValueList(count($columns),count($values));
+            }
+            $questionMarkString = $this->getPlaceholder(count($values));//returns string with number of question marks
+            $columnList = implode(',',$columns); //Get columns in a comma separated manner
+            $stmt = $this->conn->prepare("INSERT INTO $table($columnList) VALUES($questionMarkString);");//Prepare the statement using the column list and question mark string
+
+            call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes), $this->getParams($values)));//uses to pass bind params to mysqli bind_param,$this->getParams($values) returns array with reference paramters required by bind_param
+
+            $stmt->execute();//Execute the statement, if it executes correctly 
+            $ar=$stmt->affected_rows;
+            return $ar;
+         
+    }
+    catch(TableNotExists $tne)
+    {
+            throw $tne;
+    }
+    catch(UnmatchedColumnValueList $ucv)
+    {
+        throw $uce;
+    }
 }
 function getBindType($values)  //function to decide the datatype flow of binding
 {
@@ -116,25 +177,48 @@ function getParams($values)   //returns a reference of array
     }
     return $params;//return referenced array
 }
-
 function getData($id,$table,$columns,$whereParam)// Retrieve data from table where whereParam is the attribute in where clause 
 {
-        $columnList = implode(',',$columns);
+        try
+        {
+            if(!$this->checkIfTableExists($table))
+            {
+                throw new TableNotExists($table);
+            }
+            
+         $columnList = implode(',',$columns);
         
-        $query="select $columnList from $table where $whereParam=$id";
+        $stmt = $this->conn->prepare("select $columnList from $table where $whereParam=?");
         
-        $result=mysqli_query($this->conn,$query);
+        $bindTypes = $this->getBindType(array($id));
+        
+        $stmt->bind_param("s", $id);
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
         $myArray=array();
-        while($row=$result->fetch_array(MYSQL_ASSOC))//Loop to copy the contents of row to an array
+        while($row=$result->fetch_assoc())//Loop to copy the contents of row to an array
         {
             $myArray[]=$row;
         }
+        
         return $myArray; // returning the resultset
+     }
+    catch(TableNotExists $tne)
+    {
+        
+        throw $tne;
+    }
+    catch(UnmatchedColumnValueList $ucv)
+    {
+        throw $ucv;
+    }
         
 }
     
 function getJsonArray($table,$array) //returns JSON array
 {
+    
      $jsonString = '{"'.$table.'":'.json_encode($array)."}";//append table name to the json encode output
      return $jsonString;//return the final json string
     
@@ -148,7 +232,16 @@ function getJson($array)//returns jSon Object
     
     function updateData($id,$columns,$values,$table)  //returns effected no of rows after updation
     {
-  
+        try
+        {
+            if(!$this->checkIfTableExists($table))
+            {
+                throw new TableNotExists($table);
+            }
+            if(count($columns)!=count($values))
+            {
+                throw new UnmatchedColumnValueList(count($columns),count($values));
+            }
         $columnList="";
         foreach($columns as $i)
         {
@@ -161,23 +254,42 @@ function getJson($array)//returns jSon Object
      
     
     
-    $stmt = $this->conn->prepare("UPDATE $table set $cL where id=$id;");
+        $stmt = $this->conn->prepare("UPDATE $table set $cL where id=$id;");
     
    
         //$params=array_merge(array($bindTypes),$this->getParams($values));
-  call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes),$this->getParams($values)));//uses to pass bind params to mysqli bind_param
-    if($stmt->execute())//Execute the statement, if it executes correctly 
-        {
-            $ar=$stmt->affected_rows;
-        return $ar;
+        call_user_func_array(array($stmt, 'bind_param'),array_merge(array($bindTypes),$this->getParams($values)));//uses to pass bind params to mysqli bind_param
+        if($stmt->execute())//Execute the statement, if it executes correctly 
+            {
+                $ar=$stmt->affected_rows;
+            return $ar;
+            }
         }
-       
+    catch(TableNotExists $tne)
+    {
+            throw $tne;
+    }
+        catch(UnmatchedColumnValueList $ucv)
+    {
+        throw $ucv;
+    }
+        
+}
+    
+    function checkIfTableExists($table)
+    {
+        return $this->conn->query("DESCRIBE `$table`");
         
     }
+    
     function __destruct(){
         $this->conn->close();
         
     }
     
+    
+    
 }
+    
+    
 ?>
