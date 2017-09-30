@@ -77,10 +77,10 @@ class StudentSubject
     private $crud;
     private $studentID;
     private $subjects;
-    function __construct($crud,$studentDetails)
+    function __construct($crud,$studentID)
     {
         $this->crud = $crud;
-        $this->studentID = $studentDetails->getStudentID();
+        $this->studentID = $studentID;
         $this->getStudentSubjects();
         
     }
@@ -91,23 +91,29 @@ class StudentSubject
         $subjectIDs = $this->crud->getData($this->studentID,"enrolls",$columns,"user_id");
         $columns = array('subject_id','name');
         $result = array();
+        
         for($i=0;$i<count($subjectIDs);$i++)
         {
+            
             $result[] = $this->crud->getData($subjectIDs[$i]['subject_id'],"subject",$columns,"subject_id");
             
         }
+        
         $this->subjects = array();
         for($i=0;$i<count($result);$i++)
         {
-                $this->subjects[] = $result[$i][0];
-            
+                $temp = $result[$i][0];
+           
+                $this->subjects[] = new Subject($this->crud,$temp['subject_id']);
+           
         }
-                
+        
     }
     
     function getSubjects()
     {
         return $this->subjects;
+        
     }
     
     function getSubjectIDs()
@@ -115,8 +121,8 @@ class StudentSubject
         $subID = array();
         for($i=0;$i<count($this->subjects);$i++)
         {
-            $subject = $this->subjects[$i];
-            $subID[] = $subject['subject_id'];
+            
+            $subID[] = $this->subjects[$i]->getSubjectID();
             
         }
         return $subID;
@@ -127,8 +133,8 @@ class StudentSubject
         $subNames = array();
         for($i=0;$i<count($this->subjects);$i++)
         {
-            $subject = $this->subjects[$i];
-            $subNames[] = $subject['name'];
+            
+            $subNames[] = $this->subjects[$i]->getSubjectName();
             
         }
         return $subNames;
@@ -143,21 +149,31 @@ class Subject
     private $subjectID;
     private $subjectName;
     private $semesterID;
-    
+    private $chapters;
     
     function __construct($crud,$subjectID)
     {
         $this->crud = $crud;
         $this->subjectID = $subjectID;
-        $this->fetchSubjectName();
+        $this->fetchSubjectDetails();
     }
     
-    private function fetchSubjectName()
+    private function fetchSubjectDetails()
     {
         $columns = array('name','semester_id');
         $result = $this->crud->getData($this->subjectID,"subject",$columns,"subject_id");
         $this->subjectName = $result[0]['name'];
         $this->semesterID = $result[0]['semester_id'];
+        
+        
+        $columns = array('chapter_id','name','weightage');
+        $result = $this->crud->getData($this->subjectID,"chapter",$columns,"subject_id");
+        $this->chapters = array();
+        for($i=0;$i<count($result);$i++)
+        {
+                
+                $this->chapters[] = new Chapter($this->crud,$result[$i]['chapter_id']);
+        }
         
     }
     
@@ -176,31 +192,6 @@ class Subject
         return $this->semesterID;
     }
     
-    
-    
-}
-
-class SubjectChapter
-{
-    private $crud;
-    private $subjectID;
-    private $chapters;
-    
-    function __construct($crud,$subjectID)
-    {
-        $this->crud = $crud;
-        $this->subjectID = $subjectID();
-        $this->fetchChapters();
-    }
-    
-    private function fetchChapters()
-    {
-        $columns = array('chapter_id','name','weightage');
-        $this->chapters = $this->crud->getData($this->subjectID,"chapter",$columns,"subject_id");
-        
-                
-    }
-    
     function getChapters()
     {
         return $this->chapters;
@@ -211,69 +202,65 @@ class SubjectChapter
         $chapterID = array();
         for($i=0;$i<count($this->chapters);$i++)
         {
-            $chapter = $this->chapters[$i];
-            $chapterID[] = $chapter['chapter_id'];
+            $chapterID[] =  $this->chapters[i]->getChapterID();
             
         }
         return $chapterID;
     }
     
-    function getChapterNames()
+     function getChapterNames()
     {
-        $chapterNames = array();
+        $chapternames = array();
         for($i=0;$i<count($this->chapters);$i++)
         {
-            $chapter = $this->chapters[$i];
-            $chapterNames[] = $chapter['name'];
+            $chapternames[] =  $this->chapters[i]->getChapterName();
             
         }
-        return $chapterNames;
-        
+        return $chapternames;
     }
     
-
 }
-
 
 class Chapter
 {
     private $crud;
-    private $chapterID;
-    private $chapterName;
     private $chapterWeightage;
+    private $chapterName;
+    private $chapterID;
     
     function __construct($crud,$chapterID)
     {
         $this->crud = $crud;
         $this->chapterID = $chapterID;
         $this->fetchChapterDetails();
+        
     }
     
     private function fetchChapterDetails()
     {
-        $columns = array('name','weightage');
+        $columns = array('chapter_id','name','weightage');
         $result = $this->crud->getData($this->chapterID,"chapter",$columns,"chapter_id");
         $this->chapterName = $result[0]['name'];
         $this->chapterWeightage = $result[0]['weightage'];
         
         
     }
-    
-    function getChapterID()
+    function getChapterWeightage()
     {
-        return $this->chapterID;
+        return $this->chapterWeightage;
     }
+    
     
     function getChapterName()
     {
         return $this->chapterName;
     }
     
-    function getChapterWeightage()
+     function getChapterID()
     {
-        return $this->chapterWeightage;
+        return $this->chapterID;
     }
-    
+
 }
 
 
@@ -525,49 +512,42 @@ class StudentData implements JsonSerializable
     private $studentDetails;
     private $subjects;
     private $chapters;
-    
-    function __construct($crud,$studentDetails)
+    private $studentSubject;
+    function __construct($crud,$studentDetails,$studentSubject)
     {
         $this->studentDetails = $studentDetails;
-        $studentsubject = new StudentSubject($studentDetails);
-        $enrolledSubjectIDs = $this->studentsubjects->getSubjectIDs();
-        $this->subjects = array();
-        for($i=0;$i<count($enrolledSubjectIDs);$i++)
-        {
-            $this->subjects[] = new Subject($this->crud,$enrolledSubjectIDs[$i]);
-        }
-        for($i=0;$i<count($this->subjects);$i++)
-        {
-            $this->chapters[] = new SubjectChapters($this->crud,$subjects[$i]);
-        }
         
-        
-        
-        
+        $this->studentSubject = $studentSubject;
         
     }
     
     public function jsonSerialize()
     {
+        $JSONsubjects = array();
+        $subjects = $this->studentSubject->getSubjects();
+        for($i=0;$i<count($subjects);$i++)
+        {
+                    $JSONchapters = array();
+
+            $chapters = $subjects[$i]->getChapters();
+            for($j=0;$j<count($chapters);$j++)
+            {
+                $JSONchapters[] = array("chapter_id"=>$chapters[$i]->getChapterID(),"chapter_name"=>$chapters[$i]->getChapterName(),"chapter_weightage"=>$chapters[$i]->getChapterWeightage());
+                
+            }
+            $JSONsubjects[] = array("subject_id"=>$subjects[$i]->getSubjectID(),"subject_name"=>$subjects[$i]->getSubjectName(),"subject_semester_id"=>$subjects[$i]->getSubjectSemesterID(),"chapters"=>$JSONchapters);  
+            
+        }
         
-        return ['name'=>$this->studentDetails->getStudentName(),
+        
+        return ['user_id'=>$this->studentDetails->getStudentID(),'name'=>$this->studentDetails->getStudentName(),
                 'email'=>$this->studentDetails->getStudentEmail(),
                 'branch'=>array("branch_id"=>$this->studentDetails->getStudentBranch()->getBranchID(),"branch_name"=>$this->studentDetails->getStudentBranch()->getBranchName()),
                 'semester'=>array("semester_id"=>$this->studentDetails->getStudentSemester()->getSemesterID(),"semester_name"=>$this->studentDetails->getStudentSemester()->getSemesterName()),
-                'subjects'=>
-                array(
-                for()
-                    
-                
-                
-                
-                )
+                'subjects'=>$JSONsubjects
                
                ];
-                
-        
-        
-        
+             
     }
     
     
@@ -575,9 +555,19 @@ class StudentData implements JsonSerializable
     
 }
 
-/*$crud = new Crud("localhost","root","","quizapp");
+/*
+$crud = new Crud("localhost","root","","quizapp");
 
-$sd = new StudentDetails($crud,1);*/
+$sd = new StudentDetails($crud,1);
+
+$ss = new StudentSubject($crud,1);
+
+
+*/
+
+//$c = $s[0]->getChapters();
+
+//echo $c[1]->getChapterName();
 
 
 /*$ss = new StudentSubject($crud,$sd);
