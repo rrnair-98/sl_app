@@ -1,12 +1,17 @@
 package com.example.enzo.sl_app.modal;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by enzo on 9/30/2017.
  */
 
 public class Chapter {
+    @SerializedName("chapter_id")
     private long mChapterId;/*unique id for chapter*/
+    @SerializedName("chapter_name")
     private String mChapterName;/* chapter name */
+    @SerializedName("chapter_weightage")
     private double mChapterWeightage;/*chapter weightage in percentage  */
 
     public Chapter(long chapterId,String chapterName,double chapterWeightage){

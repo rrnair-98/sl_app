@@ -1,5 +1,7 @@
 package com.example.enzo.sl_app.modal;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 /**
@@ -7,7 +9,9 @@ import java.util.ArrayList;
  */
 
 public class Semester {
+    @SerializedName("semester_id")
     private long mSemesterId;/*unique id for the semester*/
+    @SerializedName("semester_name")
     private String mSemesterName;/*name of the semester*/
     public Semester(long semesterId,String semesterName){
         mSemesterId = semesterId;

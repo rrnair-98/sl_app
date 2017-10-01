@@ -1,5 +1,7 @@
 package com.example.enzo.sl_app.modal;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -8,9 +10,14 @@ import java.util.ArrayList;
  */
 
 public class Subject {
+    @SerializedName("subject_id")
     private long mSubjectId;/*unique id given to subject*/
+    @SerializedName("subject_name")
     private String mSubjectName;/*subject name*/
-    private ArrayList<Chapter> mChapters;/*list of all chapters in the sibject */
+    @SerializedName("chapters")
+    private ArrayList<Chapter> mChapters;/*list of all chapters in the subject */
+    @SerializedName("subject_semester_id")
+    private long mSubjectSemesterId;/*semester id to which this subject belongs to*/
 
     public Subject(long subjectId,String subjectName,ArrayList<Chapter> chapters){
         mSubjectId = subjectId;
@@ -44,10 +51,18 @@ public class Subject {
         mSubjectId = subjectId;
     }
 
-    /*changes the mSubjectName
-    * @param subjectName: long -> sets mSubjectName to subjectName
+    /*changes the mSubjectSemesterId
+    * @param subjectSemesterId: long -> sets mSubjectSemesterId to subjectSemesterId
     * @return ->void
     * */
+    public void setSubjectSemesterId(long subjectSemesterId) {
+        mSubjectSemesterId = subjectSemesterId;
+    }
+
+    /*changes the mSubjectName
+        * @param subjectName: long -> sets mSubjectName to subjectName
+        * @return ->void
+        * */
     public void setSubjectName(String subjectName) {
         mSubjectName = subjectName;
     }
@@ -61,7 +76,7 @@ public class Subject {
         return mSubjectId;
     }
 
-    /*returns the mSubjectId
+    /*returns the mSubjectName
     * @param -> void
     * @return ->subjectName: String
     * */
@@ -75,5 +90,13 @@ public class Subject {
     * */
     public void setChapters(ArrayList<Chapter> chapters) {
         mChapters = chapters;
+    }
+
+    /*returns the mSubjectSemesterId
+    * @param -> void
+    * @return ->mSubjectSemesterId: long
+    * */
+    public long getSubjectSemesterId() {
+        return mSubjectSemesterId;
     }
 }

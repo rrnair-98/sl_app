@@ -1,11 +1,15 @@
 package com.example.enzo.sl_app.modal;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by enzo on 9/30/2017.
  */
 
 public class Branch {
+    @SerializedName("branch_id")
     private long mBranchId;//unique id given to the branch
+    @SerializedName("branch_name")
     private String mBranchName;// name of the branch
 
     public Branch(long branchId, String branchName){
