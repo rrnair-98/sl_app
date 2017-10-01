@@ -1,4 +1,4 @@
-package com.example.enzo.sl_app.modal;
+package com.creeps.sl_app.core_services.modal;
 
 import com.google.gson.annotations.SerializedName;
 
