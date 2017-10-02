@@ -1,4 +1,4 @@
-<DOCTYPE! HTML>
+
 <?php
 include_once('CustomExceptions.php');
     error_reporting(E_ERROR | E_PARSE);
@@ -126,7 +126,7 @@ function getBindType($values)  //function to decide the datatype flow of binding
         $dt=gettype($values[$i]);
          switch($dt)
         {
-            case "integer":  //fuck off
+            case "integer": 
             {
                 
                 $ar[]="i";
@@ -192,13 +192,18 @@ function getData($id,$table,$columns,$whereParam)// Retrieve data from table whe
         
         $bindTypes = $this->getBindType(array($id));
         
-        $stmt->bind_param("s", $id);
+        
+        $stmt->bind_param($bindTypes, $id);
         
         $stmt->execute();
+            
         $result = $stmt->get_result();
+        
         $myArray=array();
+            
         while($row=$result->fetch_assoc())//Loop to copy the contents of row to an array
         {
+            
             $myArray[]=$row;
         }
         

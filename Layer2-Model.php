@@ -2,7 +2,9 @@
 
 include_once('Crud.php');
 
-class StudentDetails
+
+
+class StudentDetails // Holds the detail of student like its userID branch semester email name
 {
     
     private $crud;
@@ -37,7 +39,7 @@ class StudentDetails
     
     
     
-    function getStudentPersonalDetails()
+    function getStudentPersonalDetails()// Returnsresult set with name and email of student
     {
         return array("name"=>$this->name,"email"=>$this->email);
     }
@@ -72,12 +74,12 @@ class StudentDetails
     
 }
 
-class StudentSubject
+class StudentSubject //Linking of subjects the student has enrolled in  
 {
     private $crud;
     private $studentID;
     private $subjects;
-    function __construct($crud,$studentID)
+    function __construct($crud,$studentID) //fetches the student details when constructor is called
     {
         $this->crud = $crud;
         $this->studentID = $studentID;
@@ -227,6 +229,7 @@ class Chapter
     private $chapterWeightage;
     private $chapterName;
     private $chapterID;
+    private $Questions;
     
     function __construct($crud,$chapterID)
     {
@@ -264,46 +267,6 @@ class Chapter
 }
 
 
-class ChapterQuestion
-{
-    private $crud;
-    private $chapterID;
-    private $questions;
-    
-    function __construct($crud,$chapter)
-    {
-        $this->crud = $crud;
-        $this->chapterID = $chapter->getChapterID();
-        $this->fetchQuestions();
-    }
-    
-    private function fetchQuestions()
-    {
-        $columns = array('question_id','level','statement','marks','probability','image_count','type','answer_ID');
-        $this->questions = $this->crud->getData($this->chapterID,"question",$columns,"chapter_id");
-                
-    }
-    
-    function getQuestions()
-    {
-        return $this->questions;
-    }
-    
-    function getQuestionIDs()
-    {
-        $questionID = array();
-        for($i=0;$i<count($this->questions);$i++)
-        {
-            $question = $this->questions[$i];
-            $questionID[] = $question['question_id'];
-            
-        }
-        return $questionID;
-    }
-    
-
-}
-
 class Question
 {
     private $crud;
@@ -315,12 +278,15 @@ class Question
     private $image_count;
     private $type;
     private $answer_id;
+    private $test_count;
+    private $options;
         
     
     function __construct($crud,$questionID)
     {
         $this->crud = $crud;
         $this->questionID = $questionID;
+        
         $this->fetchQuestionDetails();
     }
     
@@ -336,6 +302,18 @@ class Question
         $this->image_count = $result[0]['image_count'];
         $this->type = $result[0]['type'];
         $this->answer_id = $result[0]['answer_id'];
+        $this->test_count = $result[0]['test_count'];
+        
+        $columns = array('option_id','statement','image_count');
+        $result = $this->crud->getData($this->questionID,"options",$columns,"question_id");
+        $this->options = array();
+        for($i=0;$i<count($result);$i++)
+        {
+                if($result[$i]['option_id']==$this->answer_id)
+                    continue;
+                $this->options[] = new Option($this->crud,$result[$i]['option_id']);
+        }
+        
         
     }
     
@@ -371,29 +349,9 @@ class Question
         return $this->statement;
     }
     
-    
-    
-}
-
-class QuestionOption
-{
-    
-    private $crud;
-    private $questionID;
-    private $optionss;
-    
-    function __construct($crud,$question)
+    function getQuestionMarks()
     {
-        $this->crud = $crud;
-        $this->questionID = $question->getQuestionID();
-        $this->fetchOptions();
-    }
-    
-    private function fetchOptions()
-    {
-        $columns = array('option_id','statement','image_count');
-        $this->options = $this->crud->getData($this->questionID,"options",$columns,"question_id");
-                
+        return $this->marks;
     }
     
     function getOptions()
@@ -401,20 +359,10 @@ class QuestionOption
         return $this->options;
     }
     
-    function getOptionIDs()
-    {
-        $optionID = array();
-        for($i=0;$i<count($this->options);$i++)
-        {
-            $option = $this->options[$i];
-            $optionID[] = $option['option_id'];
-            
-        }
-        return $optionID;
-    }
     
     
 }
+
 
 
 class Option
@@ -554,6 +502,53 @@ class StudentData implements JsonSerializable
     
     
 }
+
+class QuestionData implements JsonSerializable //A custom implementation for json_encode to get question detail when question object is passed
+{
+    private $question;
+    private $options;
+    
+    function __construct($crud,$question)
+    {
+        $this->question = $question;
+         
+    }
+    
+    public function jsonSerialize()
+    {
+        $JSONquestion_stmt = array(); 
+        $question_statement = $this->question->getQuestionStatement(); //return question statement from question object 
+        
+        $statementArray = json_decode($question_statement,true); //decode the question json into an assoc array
+       
+        $JSONoptions = array();
+        $options = $this->question->getOptions();//get all the options for question
+        
+        for($i=0;$i<count($options);$i++) //loop to generate the options sub array with all options details
+        {
+            $option_statement = $options[$i]->getOptionStatement();
+            $option_statementArray = json_decode($option_statement,true);//decode the json in object statement
+            
+            $JSONoptions[] = array("option_id"=>$options[$i]->getOptionID(),"options_url"=>$option_statementArray['options_url'],"options_text"=>$option_statementArray['options_text'],"sub_id"=>$option_statementArray['sub_id']);
+            
+        }
+        
+        
+        return ["question_id"=>$this->question->getQuestionID(),"marks"=>$this->question->getQuestionMarks(),"type"=>$this->question->getQuestionType(),"major_stmt"=>$statementArray['major_stmt'],"question_stmt"=>$statementArray['question_stmt'],"options"=>$JSONoptions];//return the question detail in the required format
+        
+        
+  
+        
+        
+             
+    }
+    
+    
+    
+    
+}
+
+
 
 /*
 $crud = new Crud("localhost","root","","quizapp");
