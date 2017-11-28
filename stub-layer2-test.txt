@@ -1,0 +1,70 @@
+
+
+$crud = new Crud("127.0.0.1","root","","quizapp");
+
+$sd = new StudentDetails($crud,1);
+
+$ss = new StudentSubject($crud,1);
+
+//echo $sd->getStudentName();
+//echo $sd->getStudentEmail();
+//echo $sd->getStudentBranch()->getBranchName();
+//echo $sd->getStudentID();
+//echo $sd->getStudentSemester()->getSemesterName();;
+//print_r($sd->getStudentPersonalDetails());
+
+
+//print_r($ss->getSubjectNames());
+//print_r($ss->getSubjectIDs());
+
+$sub_array = $ss->getSubjects();
+
+//echo $sub_array[0]->getSubjectName();
+//echo $sub_array[0]->getSubjectID();
+//echo $sub_array[0]->getSubjectSemesterID();
+//print_r($sub_array[0]->getChapterNames());
+//print_r($sub_array[0]->getChapterIDs());
+//echo $c[1]->getChapterName();
+
+$chapter_array = $sub_array[0]->getChapters();
+/*echo $chapter_array[0]->getChapterName();*/
+/*echo $chapter_array[0]->getChapterID();*/
+/*echo $chapter_array[0]->getChapterID();*/
+//print_r($chapter_array[0]->getQuestionIDs());
+$questions_array = $chapter_array[0]->getQuestions();
+
+//echo $questions_array[0]->getQuestionStatement();
+//echo $questions_array[0]->getAnswerID();
+//echo $questions_array[0]->getQuestionType();
+print_r($questions_array[0]->getOptionIDs());
+$options_array = $questions_array[0]->getOptions();
+echo $options_array[0]->getOptionStatement();
+echo $options_array[0]->getOptionID();
+echo $options_array[0]->getOptionImageCount();
+
+//print_r($sub_array[0]->getChapterIDs());
+//echo $c[1]->getChapterName();
+/*$ss = new StudentSubject($crud,$sd);
+
+$subjectID = $ss->getSubjectIDs();
+
+$s = new Subject($crud,$subjectID[0]);
+
+$subchapter = new SubjectChapter($crud,$s);
+
+$chapterid = $subchapter->getChapterIDs();
+
+$chap = new Chapter($crud,$chapterid[0]);
+
+$cq = new ChapterQuestion($crud,$chap);
+$qIDs = $cq->getQuestionIDs();
+$q = new Question($crud,$qIDs[0]);
+
+$qo = new QuestionOption($crud,$q);
+
+$oIDs = $qo->getOptionIDs();
+$o = new Option($crud,$oIDs[0]);
+
+echo $o->getOptionStatement();*/
+
+
