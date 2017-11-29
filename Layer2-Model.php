@@ -441,6 +441,97 @@ class Option //Class for an object
 
 }
 
+class TestAnswerSheet
+{
+
+    private $crud;
+    private $test_id;
+    private $answer_sheets;
+
+    function __construct($crud,$test_id)
+    {
+        $this->crud = $crud;
+        $this->test_id = $test_id;
+        $this->fetchAnswerSheets();
+    }
+    private function fetchAnswerSheets()
+    {
+        $columns = array('answer_sheet_id');
+        $result = $this->crud->getData($this->test_id, "answer_sheet", $columns, "test_id");
+        $this->answer_sheets = array();
+        for($i=0;$i<count($result);$i++)//Insert into array of answer_sheets
+        {
+            $this->answer_sheets[] = new AnswerSheet($this->crud,$result[$i]['answer_sheet_id']);
+        }
+
+
+    }
+
+    function getTestID()//Returns test id
+    {
+        return $this->test_id;
+    }
+
+    function getAnswerSheets()//Returns an array of answer sheet objects
+    {
+        return $this->answer_sheets;
+    }
+
+    function getAnswerSheetIDs()// returns an array of IDs of answer sheets
+    {
+        $answer_sheetID = array();
+        for ($i = 0; $i < count($this->answer_sheets); $i++) {
+            $answer_sheet = $this->answer_sheets[$i];
+            $answer_sheetID[] = $answer_sheet->getAnswerSheetID();
+
+        }
+        return $answer_sheetID;
+
+    }
+
+}
+
+class AnswerSheet
+{
+    private $crud;
+    private $question_id;
+    private $selected_option_id;
+    private $answer_sheet_id;
+
+      function __construct($crud,$answer_sheet_id)
+    {
+        $this->crud = $crud;
+        $this->answer_sheet_id = $answer_sheet_id;
+        $this->fetchAnswerSheetDetails();
+    }
+
+    private function fetchAnswerSheetDetails()
+    {
+        $columns = array('answer_sheet_id','question_id','selected_option_id');
+        $result = $this->crud->getData($this->answer_sheet_id,"answer_sheet",$columns,"answer_sheet_id");
+        $this->question_id = $result[0]['question_id'];
+        $this->selected_option_id = $result[0]['selected_option_id'];
+    }
+
+
+    function getQuestionID()
+    {
+        return $this->question_id;
+    }
+
+
+    function getSelectedOptionID()
+    {
+        return $this->selected_option_id;
+    }
+
+    function getAnswerSheetID()
+    {
+        return $this->answer_sheet_id;
+    }
+
+}
+
 class Branch
 {
     private $crud;
