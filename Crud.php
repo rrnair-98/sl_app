@@ -326,6 +326,27 @@ class Crud
 
         }
 
+        function getLastInsertedID()
+        {
+
+            return $this->conn->insert_id;
+
+        }
+
+        function getDateTime()
+        {
+            $stmt = $this->conn->prepare("select NOW()");
+
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+
+            $array = $result->fetch_assoc();
+
+            return $array['NOW()'];
+
+        }
+
 
 
     }
