@@ -1,13 +1,11 @@
 <?php
-require_once ("AnsweredQuestion.php");
+require_once ("AnswerSheet.php");
 require_once ("DatabaseConstants.php");
-$answeredQuestion = new AnsweredQuestion(1);
-if($answeredQuestion->isCorrect()){
-    echo "<h1>Answer is correct </h1>";
+$answerSheet = new AnswerSheet(1001);
+$list = $answerSheet->getAnsweredQuestions();
+foreach ($list as $item){
+    echo "answer id =". $item->getSelectedOption()->getOptionID()." , answer id = ".$item->getAnswer()->getOptionID()
+    ."correct = ".$item->isCorrect()."<br>";
 }
-else{
-    echo "<h1>Answer is incorrect </h1>";
-}
-$option = new Option(3444);
-var_dump($option);
+echo "count = ".count($list);
 ?>

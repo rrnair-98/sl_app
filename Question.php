@@ -11,9 +11,9 @@ class Question implements DatabaseConstants
     private $statement;
     private $image_count;
     private $type;
-    private $answer_id;
+    private /*Option*/$answer;
     private $test_count;
-    private $options;
+    private /*Option[]*/$options;
     function __construct($questionID)
     {
         $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
@@ -30,15 +30,15 @@ class Question implements DatabaseConstants
         $this->statement = $result[0]['statement'];
         $this->image_count = $result[0]['image_count'];
         $this->type = $result[0]['type'];
-        $this->answer_id = $result[0]['answer_id'];
+        $this->answer = new Option($result[0]['answer_id']);
         $this->test_count = $result[0]['test_count'];
         $columns = array('option_id', 'statement', 'image_count');
         $result = $this->crud->getData($this->questionID, "options", $columns, "question_id");
         $this->options = array();
         for ($i = 0; $i < count($result); $i++) {
-            if ($result[$i]['option_id'] == $this->answer_id)
+            if ($result[$i]['option_id'] == $this->answer->getOptionID())
                 continue;
-            $this->options[] = new Option($this->crud, $result[$i]['option_id']);
+            $this->options[] = new Option( $result[$i]['option_id']);
         }
         $this->fetchOptions();
     }
@@ -49,7 +49,7 @@ class Question implements DatabaseConstants
         $this->options = array();
         for($i=0;$i<count($result);$i++)//Insert into array of Option Objects
         {
-            $this->options[] = new Option($this->crud,$result[$i]['option_id']);
+            $this->options[] = new Option($result[$i]['option_id']);
         }
     }
     function getQuestionID()
@@ -68,9 +68,9 @@ class Question implements DatabaseConstants
     {
         return $this->type;
     }
-    function getAnswerID()
+    function getAnswer()
     {
-        return $this->answer_id;
+        return $this->answer;
     }
     function getQuestionImageCount()
     {

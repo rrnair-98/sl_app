@@ -26,7 +26,7 @@ class AnsweredQuestion implements DatabaseConstants
         $result = $this->crud->getData($this->answerSheetId,"answer_sheet",$columns,"answer_sheet_id");
         $this->question = new Question($result[0]['question_id']);
         $this->selected_option = new Option($result[0]['selected_option_id']);
-        $this->answer = new Option($this->question->getAnswerID());
+        $this->answer = $this->question->getAnswer();
     }
     function getQuestion()
     {
