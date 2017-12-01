@@ -22,7 +22,7 @@ class UploadQuestion
     private $test_count;
 
     private $chapter_id;
-    function __construct($crud,$statement,$type,$marks,$options,$level,$image_count,$chapter_id)
+    function __construct($crud,$statement,$type,$marks,$options,$level,$image_count,$chapter_id,$questionProbability=0.0, $test_count=0)
     {
         $this->crud = $crud;
         $this->type = $type;
@@ -32,14 +32,15 @@ class UploadQuestion
         $this->statement = $statement;
         $this->image_count = $image_count;
         $this->chapter_id = $chapter_id;
+        $this->questionProbability = $questionProbability;
+        $this->test_count = $test_count;
         $this->insertQuestion();
 
     }
 
     private function insertQuestion()
     {
-        $this->questionProbability = 0.0;
-        $this->test_count = 0;
+
         $columns = array('statement','level','marks','probability','image_count','type','chapter_id',
                          'test_count','created_at','updated_at');
         $values = array($this->statement,$this->level,$this->marks,$this->questionProbability,$this->image_count,$this->type,$this->chapter_id
@@ -53,11 +54,11 @@ class UploadQuestion
         }
 
         $question_id = $this->crud->getLastInsertedID();
-        $this->image_count=1;
+
         $columns_option = array('statement','image_count','question_id','created_at','updated_at');
         for($i=0;$i<count($this->options);$i++)
         {
-            $values_option = array($this->options[$i],$this->image_count,$question_id,$this->crud->getDateTime(),$this->crud->getDateTime());
+            $values_option = array($this->options[$i],0,$question_id,$this->crud->getDateTime(),$this->crud->getDateTime());
             $this->crud->insert('options',$columns_option,$values_option);
         }
 
@@ -68,4 +69,91 @@ class UploadQuestion
     }
 
 
+}
+
+class OptionModel
+{
+    private $statement;
+    private $image_count;
+
+    function __construct($statement, $image_count)
+    {
+        $this->image_count = $image_count;
+        $this->statement = $statement;
+    }
+
+    function getStatement()
+    {
+        return $this->statement;
+    }
+    function getImageCount()
+    {
+        return $this->image_count;
+    }
+}
+
+class QuestionToJSON
+{
+    public $major_stmt;
+    public $question_stmt;
+
+    function __construct($majorstatement,$questionstatement)
+    {
+        $this->major_stmt = $majorstatement;
+        $this->question_stmt = array(new QuestionStatement($questionstatement,""));
+    }
+}
+
+class QuestionStatement
+{
+    public $text;
+    public $text_image;
+
+    function __construct($text,$text_image)
+    {
+        $this->text = $text;
+        $this->text_image = $text_image;
+    }
+
+}
+
+class FIBOption
+{
+    public $answers;
+
+    function __construct($answers)
+    {
+        $this->answers = $answers;
+    }
+
+}
+
+class MCQOption
+{
+
+    public $options_url; //String
+    public $options_text;
+
+
+    public function __construct( $options_text,$options_url)
+    {
+        $this->options_url = $options_url;
+        $this->options_text = $options_text;
+    }
+
+}
+
+class MCQOptions implements JsonSerializable
+{
+    public $MCQOption;
+    public function __construct($mcqOption)
+    {
+        $this->MCQOption = $mcqOption;
+    }
+
+
+    public function jsonSerialize()
+    {
+
+    }
 }
