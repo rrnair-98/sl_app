@@ -97,13 +97,31 @@ class QuestionToJSON
     public $major_stmt;
     public $question_stmt;
 
-    function __construct($majorstatement,$questionstatement)
+    function __construct($major_stmt,$question_stmt)
     {
-        $this->major_stmt = $majorstatement;
-        $this->question_stmt = array(new QuestionStatement($questionstatement,""));
+        $this->major_stmt = $major_stmt;
+        $this->question_stmt = new QuestionStatement($question_stmt,"");
     }
+
+
 }
 
+
+class QuestionsToJSON
+{
+    public $major_stmt;
+    public $question_stmt;
+
+    function __construct($major_stmt,$question_stmt)
+    {
+        $this->major_stmt = $major_stmt;
+        for($i=0;$i<count($question_stmt);$i++)
+        {
+            $this->question_stmt = new MTFQuestionStatement($question_stmt[$i],"",$i+1);
+        }
+
+    }
+}
 class QuestionStatement
 {
     public $text;
@@ -113,6 +131,17 @@ class QuestionStatement
     {
         $this->text = $text;
         $this->text_image = $text_image;
+    }
+
+}
+
+class MTFQuestionStatement extends QuestionStatement
+{
+    public $sub_id;
+    function __construct($text, $text_image,$sub_id)
+    {
+        parent::__construct($text, $text_image);
+        $this->sub_id = $sub_id;
     }
 
 }

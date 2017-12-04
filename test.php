@@ -38,42 +38,46 @@ $i=2;
 
      for($j=0;$j<count($op);$j++)
      {
-         if(strcmp($op[$j], null))
+         if(strcmp($op[$j], NULL)!=0)
          {
+
             $optionArray[] = new OptionModel($op[$j],"");
          }
      }
-     if(!strcasecmp($category,"MCQ")||!strcasecmp($category,"FIB"))
+     if((strcasecmp($category,"MCQ")==0)||(strcasecmp($category,"FIB")==0))
      {
-         $statementJSON = new QuestionToJSON($m_statement,$statement);
-         if(!strcasecmp($category,"MCQ"))
+         $statementForJSON = new QuestionToJSON($m_statement,$statement);
+         if(strcasecmp($category,"MCQ")==0)
          {
 
              $options = array();
-             for($i=0;$i<count($optionArray);$i++)
+             for($count=0;$count<count($optionArray);$count++)
              {
-                    $MCQOption = new MCQOption($optionArray[$i]->getStatement(),$optionArray[$i]->getImageCount());
+
+                    $MCQOption = new MCQOption($optionArray[$count]->getStatement(),$optionArray[$count]->getImageCount());
                     $options[] = json_encode($MCQOption);
              }
-
              $type = 1;//MCQ
          }
          else
          {
              $optionStringArray = explode(",",end($optionArray)->getStatement());
-             $options = new FIBOption($optionStringArray);
+             $FIBOption = new FIBOption($optionStringArray);
+             $options = array(json_encode($FIBOption));
              $type= 2;//FIB
+
          }
      }
-     elseif (!strcasecmp($category,"MTF"))
+     else if(strcasecmp($category,"MTF")==0)
      {
+
 
          $type=3;
      }
      else
          $type=-1;
-     if($type!=3)
-        $upload = new UploadQuestion($crud,json_encode($statementJSON),$type,2,json_encode($options),1,2,1);
+     if($type!=-1)
+       //$upload = new UploadQuestion($crud,json_encode($statementForJSON),$type,2,$options,1,0,1);
      $i++;
 
 
