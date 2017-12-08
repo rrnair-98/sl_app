@@ -103,7 +103,6 @@ class QuestionToJSON
         $this->question_stmt = new QuestionStatement($question_stmt,"");
     }
 
-
 }
 
 
@@ -115,9 +114,10 @@ class QuestionsToJSON
     function __construct($major_stmt,$question_stmt)
     {
         $this->major_stmt = $major_stmt;
+        $this->question_stmt = array();
         for($i=0;$i<count($question_stmt);$i++)
         {
-            $this->question_stmt = new MTFQuestionStatement($question_stmt[$i],"",$i+1);
+            $this->question_stmt[] = new MTFQuestionStatement($question_stmt[$i],"",$i+1);
         }
 
     }
@@ -146,7 +146,7 @@ class MTFQuestionStatement extends QuestionStatement
 
 }
 
-class FIBOption
+class AnswersOption
 {
     public $answers;
 
@@ -172,17 +172,15 @@ class MCQOption
 
 }
 
-class MCQOptions implements JsonSerializable
+class MTFOption extends MCQOption
 {
-    public $MCQOption;
-    public function __construct($mcqOption)
+    public $sub_id;
+    function __construct($options_text, $options_url,$sub_id)
     {
-        $this->MCQOption = $mcqOption;
+        parent::__construct($options_text, $options_url);
+        $this->sub_id = $sub_id;
     }
 
-
-    public function jsonSerialize()
-    {
-
-    }
 }
+
+

@@ -54,15 +54,16 @@ $i=2;
              for($count=0;$count<count($optionArray);$count++)
              {
 
-                    $MCQOption = new MCQOption($optionArray[$count]->getStatement(),$optionArray[$count]->getImageCount());
+                    $MCQOption = new MCQOption($optionArray[$count]->getStatement(),"");
                     $options[] = json_encode($MCQOption);
              }
              $type = 1;//MCQ
          }
          else
          {
+             $options = array();
              $optionStringArray = explode(",",end($optionArray)->getStatement());
-             $FIBOption = new FIBOption($optionStringArray);
+             $FIBOption = new AnswersOption($optionStringArray);
              $options = array(json_encode($FIBOption));
              $type= 2;//FIB
 
@@ -70,14 +71,39 @@ $i=2;
      }
      else if(strcasecmp($category,"MTF")==0)
      {
+         $questions = array();
+        for($count=0;$count<(count($optionArray)/2);$count++)
+        {
+            $questions[] = $optionArray[$count];
+        }
+         $statementForJSON = new QuestionsToJSON($m_statement,$questions);
+        $options = array();
+        for($count=(count($optionArray)/2);$count<count($optionArray)-1;$count++)
+        {
+            $MTFOption = new MTFOption($optionArray[$count]->getStatement(),"",($count+1)-(count($optionArray)/2));
+            $options[] = json_encode($MTFOption);
+        }
 
 
-         $type=3;
+
+        $optionPairs = explode(",",$optionArray[count($optionArray)-1]->getStatement());
+        $answers = array();
+        for($count=0;$count<count($optionPairs);$count++)
+        {
+            $answer = explode("-",$optionPairs[$count]);
+            $answers[] = strval($answer[1]-(count($optionArray)-1)/2);
+        }
+
+
+        $finalAnswer = new AnswersOption($answers);
+        $options[] = json_encode($finalAnswer);
+        print_r($options);
+        $type=3;
      }
      else
          $type=-1;
      if($type!=-1)
-       //$upload = new UploadQuestion($crud,json_encode($statementForJSON),$type,2,$options,1,0,1);
+       $upload = new UploadQuestion($crud,json_encode($statementForJSON),$type,2,$options,1,0,1);
      $i++;
 
 
