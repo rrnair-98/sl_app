@@ -49,5 +49,13 @@ class AnsweredQuestion implements DatabaseConstants
         return false;
     }
 
+    /**
+     * returns answer sheet id
+     */
+    public function getAnswerSheetId()
+    {
+        return $this->answerSheetId;
+    }
+
 }
 ?>
