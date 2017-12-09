@@ -88,5 +88,21 @@ class AnswerSheet implements DatabaseConstants {
         return $this->answeredQuestions;
     }
 
+    public function getJson(){
+        $string = "{";
+        $string.="\"test_id\":".$this->testId;
+        $string.=",\"total_marks\":".$this->totalMarks;
+        $string.=",\"marks_scored\":".$this->marksScored;
+        $string.=",\"total_questions\":".$this->totalQuestions;
+        $string.=",\"questions_answered\":".$this->getTotalCorrectlyAnsweredQuestions();
+        $string.=",\"answers\":[";
+        foreach ($this->answeredQuestions as $answeredQuestion) {
+            $temp=$answeredQuestion->getJson().",";
+            $string.=$temp;
+        }
+        $string = substr($string,0,-1);
+        $string.="]}";
+        return $string;
+    }
 }
 ?>

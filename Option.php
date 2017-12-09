@@ -32,5 +32,14 @@ class Option implements DatabaseConstants//Class for an object
     {
         return $this->statement;
     }
+
+    public function getJson(){
+        $string = "{";
+        $string.="\"option_id\":".$this->optionID;
+        $string.=",\"option_statement\":".$this->statement;
+        $string.="}";
+        return $string;
+    }
+
 }
 ?>
