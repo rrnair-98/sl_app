@@ -75,11 +75,12 @@ class OptionModel
 {
     private $statement;
     private $image_count;
-
-    function __construct($statement, $image_count)
+    private $image_url;
+    function __construct($statement, $image_count,$img_url)
     {
         $this->image_count = $image_count;
         $this->statement = $statement;
+        $this->image_url = $img_url;
     }
 
     function getStatement()
@@ -90,6 +91,10 @@ class OptionModel
     {
         return $this->image_count;
     }
+    function getImageUrl()
+    {
+        return $this->image_url;
+    }
 }
 
 class QuestionToJSON
@@ -97,10 +102,10 @@ class QuestionToJSON
     public $major_stmt;
     public $question_stmt;
 
-    function __construct($major_stmt,$question_stmt)
+    function __construct($major_stmt,$question_stmt,$text_image)
     {
         $this->major_stmt = $major_stmt;
-        $this->question_stmt = new QuestionStatement($question_stmt,"");
+        $this->question_stmt = new QuestionStatement($question_stmt,$text_image);
     }
 
 }
@@ -117,7 +122,7 @@ class QuestionsToJSON
         $this->question_stmt = array();
         for($i=0;$i<count($question_stmt);$i++)
         {
-            $this->question_stmt[] = new MTFQuestionStatement($question_stmt[$i],"",$i+1);
+            $this->question_stmt[] = new MTFQuestionStatement($question_stmt[$i]->getStatement(),$question_stmt[$i]->getImageUrl(),strval($i+1));
         }
 
     }
@@ -169,6 +174,19 @@ class MCQOption
         $this->options_url = $options_url;
         $this->options_text = $options_text;
     }
+
+    public function getOptionsUrl()
+    {
+        return $this->options_url;
+    }
+
+
+    public function getOptionsText()
+    {
+        return $this->options_text;
+    }
+
+
 
 }
 
