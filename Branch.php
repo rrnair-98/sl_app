@@ -4,21 +4,22 @@ require_once ("DatabaseConstants.php");
 class Branch implements DatabaseConstants
 {
     private $crud;
-    private $branch_id;
-    private $branch_name;
+    private $branchId;
+    private $branchName;
+    private $semesters;
     function __construct($branch_id,$branch_name)
     {
         $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
-        $this->branch_id = $branch_id;
-        $this->branch_name = $branch_name;
+        $this->branchId = $branch_id;
+        $this->branchName = $branch_name;
     }
-    function getBranchID()
+    function getBranchId()
     {
-        return $this->branch_id;
+        return $this->branchId;
     }
     function getBranchName()
     {
-        return $this->branch_name;
+        return $this->branchName;
     }
 }
 ?>

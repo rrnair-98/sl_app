@@ -59,22 +59,31 @@ class AnsweredQuestion implements DatabaseConstants
     }
 
 
-    private function isMcqCorrect(){
+    protected function removeSpaces($string){
+        $string = str_replace(" ","",$string);
+        $string = str_replace("\n","",$string);
+        $string = str_replace("\t","",$string);
+        $string = str_replace("\r","",$string);
+        return $string;
+    }
+    protected function isMcqCorrect(){
         if ($this->selected_option->getOptionID() == $this->answer->getOptionID()){
             return true;
         }
         return false;
     }
 
-    private function isFibCorrect(){
-        $tempAnswer = str_replace(" ","",$this->answer->getOptionStatement());
-        $tempSelection = str_replace(" ","",$this->miscellaneousAnswer->getMiscellaneousStatement());
-         /*if($this->answer->getOptionStatement() ==
-             $this->miscellaneousAnswer->getMiscellaneousStatement()){
-             return true;
-         }*/
+    protected function isFibCorrect(){
+        $tempAnswer = $this->answer->getOptionStatement();
+        $tempSelection = $this->miscellaneousAnswer->getMiscellaneousStatement();
+        $tempAnswer = $this->removeSpaces($tempAnswer);
+        $tempSelection = $this->removeSpaces($tempSelection);
          if($tempAnswer == $tempSelection){return true;}
         return false;
+    }
+
+    protected function isMtfCorrect(){
+        return $this->isFibCorrect();
     }
     /*returns true if the answer is correct*/
     function isCorrect(){
@@ -88,6 +97,8 @@ class AnsweredQuestion implements DatabaseConstants
                 //it is FIB
                 return $this->isFibCorrect();
                 break;
+            case 3:
+                return $this->isMtfCorrect();
         }
         return false;
     }

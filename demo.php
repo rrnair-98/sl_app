@@ -42,7 +42,7 @@ foreach ($answeredQuestion as $item){
     echo "<td>"; echo str_replace(" ",""
         ,$answer->getOptionStatement()); echo "</td>";
     if($item->isCorrect()){
-        echo "<td>"; echo "yes"; echo "</td>";
+        echo "<td>"; echo "true"; echo "</td>";
     }
     else {
         echo "<td>"; echo "false"; echo "</td>";
@@ -72,16 +72,38 @@ echo "option = ".$a;
 echo "<br>";
 $b = str_replace(" ","",$item->getAnswer()->getOptionStatement());
 echo "answer = ".$b;
-
-if(strcmp($a,$b) ==0 ){
-    echo "<br> true";
-}
+$a = str_replace("\n","",$a);
+$b = str_replace("\n","",$b);
+$a = str_replace("\t","",$a);
+$b = str_replace("\t","",$b);
+$a = str_replace("\r","",$a);
+$b = str_replace("\r","",$b);
+$lenA=strlen($a);
+$lenB=strlen($b);
+echo "<br>Length of A = $lenA";
+echo "<br>Length of B = $lenB";
+$htmlA = htmlspecialchars($a);
+$htmlB = htmlspecialchars($a);
+echo "<br>HTML A = ".$htmlA;
+echo "<br>HTML B = ".$htmlB;
 for($i=0;$i<strlen($a);$i++){
     if($a[$i] != $b[$i]){
         echo "<br> unmatched string";
         echo "i = $i";
+        echo "<br> a[$i] =". $a[$i];
+        echo "<br> b[$i] =". $b[$i];
         break;
     }
 }
+echo "<br>Printing A<br>";
+for($i=0;$i<$lenA;$i++){
+    echo "$a[$i]";
+}
+//if(strcmp($a,$b) ==0 ){
+if($a==$b ){
+    echo "<br> true";
+}
+$a[1]='X';
+echo"<br>A = $a<br>";
 echo $answerSheet->getJson();
 ?>

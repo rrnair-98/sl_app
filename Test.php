@@ -1,6 +1,8 @@
 <?php
 require_once ("Crud.php");
 require_once ("DatabaseConstants.php");
+require_once ("Chapter.php");
+require_once ("Subject.php");
 class Test implements DatabaseConstants {
     private $crud;
     private $testId;
@@ -8,8 +10,13 @@ class Test implements DatabaseConstants {
     private $endDate;
     private $childOf;/*another test id reference */
     private $adminId;
+    private $testTitle;
     private $userId;
-    private $testAnswerSheet;/*reference ot a test answer sheet*/
+    //private $testAnswerSheet;/*reference to a test answer sheet*/
+    /*List of all the chapters that are included in this test*/
+    private $testChapters;
+    /*List of all the subjects that are included in this test*/
+    private $testSubjects;
     public function  __construct($testId=NULL){
         $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
         $this->testId = $testId;
@@ -23,18 +30,21 @@ class Test implements DatabaseConstants {
         $row = $result[0];
         $this->startDate = $row["start_date"];
         $this->endDate = $row["end_date"];
-        $this->child_of = $row["child_of"];
+        $this->childOf = $row["child_of"];
         $this->adminId = $row["admin_id"];
+        $this->testTitle = $row["test_title"];
         $this->userId = $row["user_id"];
-        $this->testAnswerSheet = new TestAnswerSheet($this->crud,$this->testId);
-    }
+        //$this->testAnswerSheet = new AnswerSheet($this->testId);
 
-    /**
-     * @param mixed $crud
-     */
-    public function setCrud($crud)
-    {
-        $this->crud = $crud;
+        $columns = array("question_id");
+        $result = $this->crud->getData($this->testId,"attempted_questions",$columns,"test_id");
+        foreach ($result as $row){
+            $chapterId = $this->crud->getData($row["question_id"],"question",
+                array("chapter_id"),"question_id");
+            $this->testChapters[] = new Chapter($chapterId[0]['chapter_id']);
+            $subjectId = $this->crud->getData($chapterId[0]['chapter_id'],"chapter",array("subject_id"),"chapter_id");
+            $this->testSubjects[] = new Subject($subjectId[0]['subject_id']);
+        }
     }
 
     /**
@@ -43,6 +53,7 @@ class Test implements DatabaseConstants {
     public function setTestId($testId)
     {
         $this->testId = $testId;
+        $this->fetchTestDetails();
     }
 
     /**
@@ -96,10 +107,10 @@ class Test implements DatabaseConstants {
     /**
      * @return mixed
      */
-    public function getTestAnswerSheet()
+    /*public function getTestAnswerSheet()
     {
         return $this->testAnswerSheet;
-    }
+    }*/
 
     /**
      * @returns midex
@@ -113,6 +124,30 @@ class Test implements DatabaseConstants {
             //array_push($tests,$item["test_id"]);
         }
         return $tests;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTestTitle()
+    {
+        return $this->testTitle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTestChapters()
+    {
+        return $this->testChapters;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTestSubjects()
+    {
+        return $this->testSubjects;
     }
 
 }

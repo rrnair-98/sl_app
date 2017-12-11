@@ -12,20 +12,19 @@ class Subject implements DatabaseConstants//class for a single subject
     {
         $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
         $this->subjectID = $subjectID;
-        $this->fetchSubjectDetails();
-    }
-    private function fetchSubjectDetails()//fetch all chapters and semester to which subject belongs
-    {
         $columns = array('name','semester_id');
         $result = $this->crud->getData($this->subjectID,"subject",$columns,"subject_id");
         $this->subjectName = $result[0]['name'];
         $this->semesterID = $result[0]['semester_id'];
-        $columns = array('chapter_id','name','weightage');
+    }
+    public function fetchChapters()//fetch all chapters and semester to which subject belongs
+    {
+        $columns = array('chapter_id');
         $result = $this->crud->getData($this->subjectID,"chapter",$columns,"subject_id");
         $this->chapters = array();
         for($i=0;$i<count($result);$i++)//Insert into array of Chapter Objects
         {
-            $this->chapters[] = new Chapter($this->crud,$result[$i]['chapter_id']);
+            $this->chapters[] = $result[$i]['chapter_id'];
         }
     }
     function getSubjectID()//Return SubjectID
@@ -44,23 +43,12 @@ class Subject implements DatabaseConstants//class for a single subject
     {
         return $this->chapters;
     }
-    function getChapterIDs()//Return array of chapter IDs
-    {
-        $chapterID = array();
-        for($i=0;$i<count($this->chapters);$i++)
-        {
-            $chapterID[] =  $this->chapters[$i]->getChapterID();
-        }
-        return $chapterID;
-    }
-    function getChapterNames()//Return array of chapter names
-    {
-        $chapternames = array();
-        for($i=0;$i<count($this->chapters);$i++)
-        {
-            $chapternames[] =  $this->chapters[$i]->getChapterName();
-        }
-        return $chapternames;
+    public function getJson(){
+        $string = "{";
+        $string.="\"subject_id\":".$this->subjectID;
+        $string.=",\"subject_name\":\"".$this->subjectName."\"";
+        $string.="}";
+        return $string;
     }
 }
 ?>
