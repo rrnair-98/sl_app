@@ -55,6 +55,9 @@ class UploadQuestion
 
         $question_id = $this->crud->getLastInsertedID();
 
+
+
+
         $columns_option = array('statement','image_count','question_id','created_at','updated_at');
         for($i=0;$i<count($this->options);$i++)
         {
@@ -105,7 +108,7 @@ class QuestionToJSON
     function __construct($major_stmt,$question_stmt,$text_image)
     {
         $this->major_stmt = $major_stmt;
-        $this->question_stmt = new QuestionStatement($question_stmt,$text_image);
+        $this->question_stmt = array(new QuestionStatement($question_stmt,$text_image));
     }
 
 }
@@ -127,6 +130,7 @@ class QuestionsToJSON
 
     }
 }
+
 class QuestionStatement
 {
     public $text;

@@ -1,6 +1,5 @@
 <?php
 
-include('Layer2-Upload.php');
 
 
 //check if the insert was pressed
@@ -16,6 +15,7 @@ if(isset($_POST['btnSubmit'])){
 $excelFile = "";
     $counter = 0;
     $flag=0;
+
     foreach($_FILES["files"]["tmp_name"] as $key=>$tmp_name){
         $temp = $_FILES["files"]["tmp_name"][$key];
         $name = $_FILES["files"]["name"][$key];
@@ -24,9 +24,9 @@ $excelFile = "";
         {
             break;
         }
+        $UploadOk = true;
 
         $counter++;
-        $UploadOk = true;
 
         if($_FILES["files"]["size"][$key] > $totalBytes||$_FILES["files"]["size"][$key] = 0)
         {
@@ -100,7 +100,7 @@ $excelFile = "";
         echo "Please, Select file(s) to upload.";
     }
     if($UploadOk && $flag==1) {
-        include_once("test.php");
+        include_once("create-upload-json.php");
         UploadToDB($excelFilePath,$excelFile);
     }
 
