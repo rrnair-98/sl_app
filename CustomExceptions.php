@@ -35,7 +35,7 @@ class TableNotExists extends Exception
     {
         $this->tableName = $tableName;
     }
-    
+
     function errorMessage()
     {
         return "The table '$this->tableName' does not exist";
