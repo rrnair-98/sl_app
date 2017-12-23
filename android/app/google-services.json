@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "199175256003",
+    "firebase_url": "https://slquizapp-b3b3d.firebaseio.com",
+    "project_id": "slquizapp-b3b3d",
+    "storage_bucket": "slquizapp-b3b3d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199175256003:android:1ea5c83bd6caeb80",
+        "android_client_info": {
+          "package_name": "com.creeps.sl_app.quizapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199175256003-e2iee6uc8de9tv0vvluh4gea28arnc4d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creeps.sl_app.quizapp",
+            "certificate_hash": "c2731a8f1e3991170e561a2f1740bc7138a65a23"
+          }
+        },
+        {
+          "client_id": "199175256003-iplks9clniaa0nm5fbh4dn0kn6lld60p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbyScpSoAIfJsKztLu7wDLcK3MFxabOso"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199175256003-iplks9clniaa0nm5fbh4dn0kn6lld60p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">QuizApp</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="base_url">http://192.168.43.146/SLMCQ/SLMCQ/ui/endpoint/</string>
+</resources>
