@@ -1,4 +1,4 @@
-package com.creeps.sl_app.quizapp.networking;
+package com.creeps.sl_app.quizapp.utilities;
 
 /**
  * Created by ADMIN-PC on 22-12-2017.

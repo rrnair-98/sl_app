@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import com.creeps.sl_app.quizapp.R;
 import com.creeps.sl_app.quizapp.networking.RetrofitApiInterface;
+import com.creeps.sl_app.quizapp.utilities.SharedPreferenceHandler;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -74,8 +75,10 @@ public class HelloWorldActivity extends AppCompatActivity
                 .build();
 
         RetrofitApiInterface service = retrofit.create(RetrofitApiInterface.class);
-
-        Call<String> stringCall = service.getStringResponse("ht.degree@gmail.com");
+        SharedPreferenceHandler preferenceHandler = SharedPreferenceHandler.getInstance(this);
+        String email = preferenceHandler.get("email");
+        Log.i("email-id",email);
+        Call<String> stringCall = service.getStringResponse(email);
         stringCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {

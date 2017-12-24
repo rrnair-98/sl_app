@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.creeps.sl_app.quizapp.R;
+import com.creeps.sl_app.quizapp.utilities.SharedPreferenceHandler;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity
                         /*DataCommunicator.getInstance(getApplicationContext()).register(email);*/
                         showToast("IsNEw true");
                     }
+
+                    SharedPreferenceHandler preferenceHandler = SharedPreferenceHandler.getInstance(MainActivity.this);
+                    preferenceHandler.add("email",email);
                     startActivity(HelloWorldActivity.newIntent(MainActivity.this));
                     finish();
                 } else {
