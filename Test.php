@@ -4,19 +4,28 @@ require_once ("DatabaseConstants.php");
 require_once ("Chapter.php");
 require_once ("Subject.php");
 class Test implements DatabaseConstants {
+    /*reference to the crud class */
     private $crud;
+    /*the unique test id surrogate key*/
     private $testId;
+    /*start date time of test*/
     private $startDate;
+    /*end date time of test*/
     private $endDate;
-    private $childOf;/*another test id reference */
+    /*another test id reference */
+    private $childOf;
+    /*ID of the admin who initiated the test if any*/
     private $adminId;
+    /*string title of the test*/
     private $testTitle;
+    /*id of the user who took this test if any*/
     private $userId;
     //private $testAnswerSheet;/*reference to a test answer sheet*/
     /*List of all the chapters that are included in this test*/
     private $testChapters;
     /*List of all the subjects that are included in this test*/
     private $testSubjects;
+
     public function  __construct($testId=NULL){
         $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
         $this->testId = $testId;
@@ -24,6 +33,7 @@ class Test implements DatabaseConstants {
             $this->fetchTestDetails();
         }
     }
+    /*fetched test details and stores in instance variable*/
     final public function fetchTestDetails(){
         $columns = array("*");
         $result = $this->crud->getData($this->testId,"test",$columns,"test_id");
@@ -34,8 +44,6 @@ class Test implements DatabaseConstants {
         $this->adminId = $row["admin_id"];
         $this->testTitle = $row["test_title"];
         $this->userId = $row["user_id"];
-        //$this->testAnswerSheet = new AnswerSheet($this->testId);
-
         $columns = array("question_id");
         $result = $this->crud->getData($this->testId,"attempted_questions",$columns,"test_id");
         foreach ($result as $row){
@@ -50,6 +58,7 @@ class Test implements DatabaseConstants {
     /**
      * @param mixed $testId
      */
+    /*sets a new id to the test and fetches new details for the object's instance variable*/
     public function setTestId($testId)
     {
         $this->testId = $testId;
@@ -113,7 +122,7 @@ class Test implements DatabaseConstants {
     }*/
 
     /**
-     * @returns midex
+     * returns a list of test ids that the user has already given
      */
     public static function getTestIds($userId){
         $crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
@@ -149,6 +158,5 @@ class Test implements DatabaseConstants {
     {
         return $this->testSubjects;
     }
-
 }
 ?>

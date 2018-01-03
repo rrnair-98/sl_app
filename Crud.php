@@ -293,5 +293,13 @@ class Crud
         return $result;
     }
 
+    public function beginTransaction()
+    {
+        $this->conn->begin_transaction();
+    }
+    public function commit()
+    {
+        $this->commit();
+    }
 }
 ?>

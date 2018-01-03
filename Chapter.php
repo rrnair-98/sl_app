@@ -4,9 +4,13 @@ require_once ("DatabaseConstants.php");
 class Chapter implements DatabaseConstants
 {
     private $crud;
+    /*holds chapter wiehgtage in float*/
     private $chapterWeightage;
+    /*holds teh chapter name*/
     private $chapterName;
+    /*holds uniquely generated id for chapter*/
     private $chapterID;
+    /*holds a list of all the questions ID this chapter contains*/
     private $questions;
     function __construct($chapterID)
     {
@@ -17,7 +21,8 @@ class Chapter implements DatabaseConstants
         $this->chapterName = $result[0]['name'];
         $this->chapterWeightage = $result[0]['weightage'];
     }
-    public function fetchQuestions()//fetch questions for the given chapter
+    /*fetch questions for the given chapter*/
+    public function fetchQuestions()
     {
         $columns = array('question_id');
         $result = $this->crud->getData($this->chapterID,"question",$columns,"chapter_id");

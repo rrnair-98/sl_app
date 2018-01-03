@@ -1,25 +1,19 @@
 <?php
 require_once ("Crud.php");
 require_once ("DatabaseConstants.php");
-include_once ('Subject.php');
 class StudentSubject implements DatabaseConstants//Linking of subjects the student has enrolled in
 {
     private $crud;
-    private $email;
-    private $subjects;
     private $studentID;
-    function __construct($email)
+    private $subjects;
+    function __construct($studentID)
     {
         $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
-        $this->email = $email;
+        $this->studentID = $studentID;
         $this->getStudentSubjects();
     }
     private function getStudentSubjects()//get all enrolled subjects of student
     {
-        $columns = array('user_id');
-        $result = $this->crud->getData($this->email,"user",$columns,"email");
-        $this->studentID = $result[0]['user_id'];
-
         $columns = array('subject_id');
         $subjectIDs = $this->crud->getData($this->studentID,"enrolls",$columns,"user_id");
         $columns = array('subject_id','name');
@@ -32,8 +26,7 @@ class StudentSubject implements DatabaseConstants//Linking of subjects the stude
         for($i=0;$i<count($result);$i++)//loop to create a Subject object for each subject
         {
             $temp = $result[$i][0];
-
-            $this->subjects[] = new Subject($temp['subject_id']);//add new Subject object to array of subjects
+            $this->subjects[] = new Subject($this->crud,$temp['subject_id']);//add new Subject object to array of subjects
         }
     }
     function getSubjects()//returns array of subject objects

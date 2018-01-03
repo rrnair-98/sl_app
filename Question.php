@@ -3,6 +3,9 @@ require_once ("Crud.php");
 require_once ("DatabaseConstants.php");
 class Question implements DatabaseConstants
 {
+    const TYPE_MCQ = 1;
+    const TYPE_FIB = 2;
+    const TYPE_MTF = 3;
     private $crud;
     private $questionID;
     private $level;
@@ -40,7 +43,7 @@ class Question implements DatabaseConstants
                 continue;
             $this->options[] = new Option( $result[$i]['option_id']);
         }
-        $this->fetchOptions();
+        //$this->fetchOptions();
     }
     private function fetchOptions()
     {
@@ -96,6 +99,90 @@ class Question implements DatabaseConstants
             $optionID[] = $option->getOptionID();
         }
         return $optionID;
+    }
+
+    /**
+     * @param mixed $level
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @param mixed $questionProbability
+     */
+    public function setQuestionProbability($questionProbability)
+    {
+        $this->questionProbability = $questionProbability;
+    }
+
+    /**
+     * @param mixed $marks
+     */
+    public function setMarks($marks)
+    {
+        $this->marks = $marks;
+    }
+
+    /**
+     * @param mixed $statement
+     */
+    public function setStatement($statement)
+    {
+        $this->statement = $statement;
+    }
+
+    /**
+     * @param mixed $image_count
+     */
+    public function setImageCount($image_count)
+    {
+        $this->image_count = $image_count;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @param mixed $answer
+     */
+    public function setAnswer($answer)
+    {
+        $this->answer = $answer;
+    }
+
+    /**
+     * @param mixed $test_count
+     */
+    public function setTestCount($test_count)
+    {
+        $this->test_count = $test_count;
+    }
+
+    /**
+     * @param mixed $options
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
+    }
+
+    public function getJson()
+    {
+        $json = "";
+        $json.="{\"question_id\":".$this->getQuestionID();
+        $json.=",\"question_level\":".$this->getQuestionLevel();
+        $json.=",\"question_statement\":".$this->getQuestionStatement();
+        $json.=",\"question_marks\":".$this->getQuestionMarks();
+        $json.=",\"question_type\":".$this->getQuestionType();
+        $json.="}";
+        return $json;
     }
 }
 ?>

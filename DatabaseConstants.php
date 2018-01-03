@@ -6,7 +6,7 @@ interface DatabaseConstants{
 //    const PASSWORD = "";
     const SERVER = "localhost";
     const DATABASE = "quizapp";
-    const USERNAME = "root";
-    const PASSWORD = "";
+    const USERNAME = "rahul.ahuja";
+    const PASSWORD = "Legendary";
 }
 ?>

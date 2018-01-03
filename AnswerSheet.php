@@ -98,6 +98,7 @@ class AnswerSheet implements DatabaseConstants {
         return $this->answeredQuestions;
     }
 
+    /*returns json of this answer sheet containing all the information for rendering an entire test answer sheet*/
     public function getJson(){
         $string = "{";
         $string.="\"test_id\":".$this->testId;
