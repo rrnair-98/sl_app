@@ -40,6 +40,7 @@ class UploadToDB implements DatabaseConstants
             $category = $excel->getActiveSheet()->getCell('B' . $i)->getValue();
             $m_statement = $excel->getActiveSheet()->getCell('C' . $i)->getValue();
             $statement = $excel->getActiveSheet()->getCell('D' . $i)->getValue();
+            $marks = $excel->getActiveSheet()->getCell('N'.$i)->getValue();
             $statement_image = "";
             if (file_exists("../images/" . $statement) || (array_key_exists($statement, $images_array))) {
                 if ((array_key_exists($statement, $images_array))) {
@@ -165,7 +166,7 @@ class UploadToDB implements DatabaseConstants
             // echo json_encode($statementForJSON);
             // echo "<br>";
             if ($type != -1)
-                $upload = new UploadQuestion(json_encode($statementForJSON), $type, 2, $options, 1, $image_count, 1);
+                $upload = new UploadQuestion(json_encode($statementForJSON), $type,$marks, $options, 1, $image_count, 1);
             $i++;
 
         }
