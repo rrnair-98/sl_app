@@ -29,13 +29,26 @@ class AnswerSheet implements DatabaseConstants
 
     private function insertAnswer()
     {
-        $columns = array('test_id','question_id','selected_option_id','created_at','updated_at');
-        if($this->type==1)
-            $selected_option_id =$this->answers[0] ;
-        else
-            $selected_option_id = 0;
 
-        $values = array($this->test_id,$this->question_id,$selected_option_id,$this->crud->getDateTime(),$this->crud->getDateTime());
+
+
+
+        if(count($this->answers)==0)
+        {
+            $columns = array('test_id','question_id','created_at','updated_at');
+            $values = array($this->test_id,$this->question_id,$this->crud->getDateTime(),$this->crud->getDateTime());
+        }
+        else
+        {
+            if($this->type==1)
+                $selected_option_id =$this->answers[0] ;
+            else
+                $selected_option_id = 0;
+            $columns = array('test_id','question_id','selected_option_id','created_at','updated_at');
+            $values = array($this->test_id,$this->question_id,$selected_option_id,$this->crud->getDateTime(),$this->crud->getDateTime());
+        }
+
+
 
         try {
             $this->crud->insert('answer_sheet', $columns, $values);
@@ -44,7 +57,7 @@ class AnswerSheet implements DatabaseConstants
         {
             $e->errorMessage();
         }
-        if($this->type!=1)
+        if(($this->type!=1) && (count($this->answers) )!=0)
         {
             $sheet_id = $this->crud->getLastInsertedID();
             $columns = array('answer_sheet_id','statement','image_count','created_at','updated_at');
