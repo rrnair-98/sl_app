@@ -1,14 +1,16 @@
 <?php
 require_once ("Crud.php");
 require_once ("DatabaseConstants.php");
-class StudentData implements JsonSerializable
+class StudentData implements JsonSerializable,DatabaseConstants
 {
+    private $crud;
     private $studentDetails;
     private $studentSubject;
     function __construct($studentDetails,$studentSubject)
     {
-        $this->crud = Crud::getInstance(SERVER,USER,PASSWORD,DATABASE);
+        $this->crud = Crud::getInstance(self::SERVER,self::USERNAME,self::PASSWORD,self::DATABASE);
         $this->studentSubject = $studentSubject;
+        $this->studentDetails = $studentDetails;
     }
     public function jsonSerialize()
     {
